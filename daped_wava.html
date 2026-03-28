@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damped Wave Simulator</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        canvas {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #2a2a2a;
+            padding: 15px 30px;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #00ffff;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background-color: #00cccc;
+        }
+        input[type="range"] {
+            cursor: pointer;
+        }
+        h2 {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Damped Wave Equation: \( u_{tt} + 2\gamma u_t = c^2 u_{xx} \)</h2>
+    
+    <canvas id="waveCanvas" width="800" height="400"></canvas>
+
+    <div class="controls">
+        <label for="gamma">Damping Coefficient (\( \gamma \)): <span id="gammaValue">0.010</span></label>
+        <input type="range" id="gamma" min="0" max="0.1" step="0.001" value="0.010">
+        <button id="pluckBtn">Pluck String</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // UI Elements
+        const gammaSlider = document.getElementById('gamma');
+        const gammaDisplay = document.getElementById('gammaValue');
+        const pluckBtn = document.getElementById('pluckBtn');
+
+        // Physics Variables
+        let time = 0;
+        let gamma = parseFloat(gammaSlider.value);
+        const amplitude = 150; 
+        const length = width; 
+        const omega = 0.15; // Natural frequency
+
+        // Update gamma when slider moves
+        gammaSlider.addEventListener('input', (e) => {
+            gamma = parseFloat(e.target.value);
+            gammaDisplay.textContent = gamma.toFixed(3);
+        });
+
+        // Reset time to "pluck" the string
+        pluckBtn.addEventListener('click', () => {
+            time = 0; 
+        });
+
+        function draw() {
+            // Clear canvas for the new frame
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw center resting line
+            ctx.beginPath();
+            ctx.moveTo(0, height / 2);
+            ctx.lineTo(width, height / 2);
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Calculate frequencies and envelopes
+            let currentEnvelope = amplitude * Math.exp(-gamma * time);
+            let omega_d = Math.sqrt(Math.max(0, omega * omega - gamma * gamma));
+
+            // Draw decay envelopes (dashed lines)
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 5) {
+                let yEnv = currentEnvelope * Math.sin(Math.PI * x / length);
+                if (x === 0) ctx.moveTo(x, height / 2 - yEnv);
+                else ctx.lineTo(x, height / 2 - yEnv);
+            }
+            for (let x = 0; x <= width; x += 5) {
+                let yEnv = currentEnvelope * Math.sin(Math.PI * x / length);
+                if (x === 0) ctx.moveTo(x, height / 2 + yEnv);
+                else ctx.lineTo(x, height / 2 + yEnv);
+            }
+            ctx.strokeStyle = 'rgba(255, 165, 0, 0.4)';
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]); 
+
+            // Calculate actual string position
+            let stringDisplacement = Math.cos(omega_d * time);
+
+            // Draw the string
+            ctx.beginPath();
+            for (let x = 0; x <= width; x += 5) {
+                let y = currentEnvelope * stringDisplacement * Math.sin(Math.PI * x / length);
+                if (x === 0) ctx.moveTo(x, height / 2 - y);
+                else ctx.lineTo(x, height / 2 - y);
+            }
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // ---------------------------------------------------------
+            // EXACT MATHEMATICAL ENERGY CALCULATION
+            // ---------------------------------------------------------
+            let term1 = omega_d * omega_d;
+            let term2 = 2 * gamma * gamma * Math.pow(Math.cos(omega_d * time), 2);
+            let term3 = gamma * omega_d * Math.sin(2 * omega_d * time);
+            
+            let exactEnergyRatio = Math.exp(-2 * gamma * time) * (term1 + term2 + term3) / (omega * omega);
+            exactEnergyRatio = Math.max(0, exactEnergyRatio);
+
+            // Draw the precise Energy Bar
+            ctx.fillStyle = '#ff4444';
+            ctx.fillRect(20, 20, 200 * exactEnergyRatio, 15);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(20, 20, 200, 15);
+            
+            // Display percentage text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Arial';
+            let percentage = (exactEnergyRatio * 100).toFixed(1);
+            ctx.fillText(`Remaining Energy: ${percentage}%`, 20, 12);
+
+            // Advance time and loop
+            time += 0.5;
+            requestAnimationFrame(draw);
+        }
+
+        // Start animation
+        draw();
+    </script>
+</body>
+</html>
