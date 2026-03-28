@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction-Diffusion Simulator</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 30px;
+        }
+        canvas {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            margin-top: 10px;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #2a2a2a;
+            padding: 20px 40px;
+            border-radius: 8px;
+            width: 720px;
+        }
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            background: #1e1e1e;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #00ffff;
+        }
+        button {
+            background-color: #ff9800;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+            align-self: center;
+        }
+        button:hover {
+            background-color: #e68a00;
+        }
+        input[type="range"] {
+            width: 300px;
+            cursor: pointer;
+        }
+        h2 { margin-bottom: 5px; }
+        .math-text { font-size: 1.1em; color: #ccc; }
+    </style>
+</head>
+<body>
+
+    <h2>Reaction-Diffusion Equation: \( u_t = k u_{xx} + r u \)</h2>
+    <p class="math-text">Exact Solution Mode: \( u(x,t) = A_0 e^{(r - k\pi^2)t} \sin(\pi x) \)</p>
+
+    <canvas id="heatCanvas" width="800" height="400"></canvas>
+
+    <div class="controls">
+        <div class="slider-row">
+            <label for="kSlider">Diffusion Rate (\( k \)): <strong id="kValue">0.010</strong></label>
+            <input type="range" id="kSlider" min="0" max="0.05" step="0.001" value="0.010">
+        </div>
+        
+        <div class="slider-row">
+            <label for="rSlider">Reaction Rate (\( r \)): <strong id="rValue">0.000</strong></label>
+            <input type="range" id="rSlider" min="-0.2" max="0.2" step="0.001" value="0.000">
+        </div>
+
+        <div class="info-panel">
+            <span id="statusText">Status: Calculating...</span>
+            <span id="criticalText">Tipping Point \( r_{crit} \): 0.099</span>
+        </div>
+
+        <button id="resetBtn">Restart Time (t=0)</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('heatCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // UI Elements
+        const kSlider = document.getElementById('kSlider');
+        const rSlider = document.getElementById('rSlider');
+        const kValue = document.getElementById('kValue');
+        const rValue = document.getElementById('rValue');
+        const statusText = document.getElementById('statusText');
+        const criticalText = document.getElementById('criticalText');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Physics/Math Variables
+        let time = 0;
+        let k = parseFloat(kSlider.value);
+        let r = parseFloat(rSlider.value);
+        
+        const A0 = 150; // Initial amplitude (pixels)
+        // We set mathematical L = 1, so lambda = pi/L = pi.
+        const lambda = Math.PI; 
+
+        // Update values on slider move
+        kSlider.addEventListener('input', (e) => {
+            k = parseFloat(e.target.value);
+            kValue.textContent = k.toFixed(3);
+            updateUI();
+        });
+
+        rSlider.addEventListener('input', (e) => {
+            r = parseFloat(e.target.value);
+            rValue.textContent = r.toFixed(3);
+            if (r > 0) rValue.style.color = "#ff4444";
+            else if (r < 0) rValue.style.color = "#00ffff";
+            else rValue.style.color = "#ffffff";
+            updateUI();
+        });
+
+        resetBtn.addEventListener('click', () => {
+            time = 0;
+        });
+
+        function updateUI() {
+            // Calculate the critical reaction rate: k * (pi/L)^2
+            let r_crit = k * lambda * lambda;
+            criticalText.innerHTML = `Tipping Point \\( r_{crit} \\): <strong>${r_crit.toFixed(3)}</strong>`;
+
+            // Update status text and color based on the battle between r and k
+            if (r > r_crit) {
+                statusText.innerHTML = "<strong>Status: Exponential Growth (Reaction Wins)</strong>";
+                statusText.style.color = "#ff4444";
+                document.querySelector('.info-panel').style.borderLeftColor = "#ff4444";
+            } else if (r < r_crit) {
+                statusText.innerHTML = "<strong>Status: Exponential Decay (Diffusion Wins)</strong>";
+                statusText.style.color = "#00ffff";
+                document.querySelector('.info-panel').style.borderLeftColor = "#00ffff";
+            } else {
+                statusText.innerHTML = "<strong>Status: Perfect Equilibrium (Steady State)</strong>";
+                statusText.style.color = "#ffffff";
+                document.querySelector('.info-panel').style.borderLeftColor = "#ffffff";
+            }
+            
+            // Tell MathJax to re-render the dynamic critical text we just updated
+            if(window.MathJax) {
+                MathJax.typesetPromise([criticalText]);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Draw base line
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+            ctx.lineTo(width, height);
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Mathematically exact amplitude calculation
+            let r_crit = k * lambda * lambda;
+            let exponent = (r - r_crit) * time;
+            let currentAmplitude = A0 * Math.exp(exponent);
+
+            // Cap the visual drawing amplitude so it doesn't break the canvas, 
+            // but the math continues to grow.
+            let visualAmplitude = Math.min(currentAmplitude, height - 20);
+
+            // Draw the wave
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+
+            for (let x_px = 0; x_px <= width; x_px += 5) {
+                // Map pixel x (0 to 800) to mathematical x (0 to 1)
+                let x_math = x_px / width;
+                
+                // Calculate y: u(x) = Amp * sin(pi * x)
+                let y_math = visualAmplitude * Math.sin(lambda * x_math);
+                
+                // Invert Y because canvas draws top-to-bottom
+                ctx.lineTo(x_px, height - y_math); 
+            }
+            ctx.lineTo(width, height);
+
+            // Create a gradient that changes color if it's growing or dying
+            let gradient = ctx.createLinearGradient(0, height, 0, 0);
+            if (r > r_crit) {
+                // Fire colors for growth
+                gradient.addColorStop(0, "rgba(255, 68, 68, 0.1)");
+                gradient.addColorStop(1, "rgba(255, 68, 68, 0.6)");
+                ctx.strokeStyle = '#ff4444';
+            } else {
+                // Ice colors for decay
+                gradient.addColorStop(0, "rgba(0, 255, 255, 0.1)");
+                gradient.addColorStop(1, "rgba(0, 255, 255, 0.6)");
+                ctx.strokeStyle = '#00ffff';
+            }
+
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Display current exact Amplitude
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '16px Arial';
+            ctx.fillText(`Current Peak Temperature: ${currentAmplitude.toFixed(1)}`, 20, 30);
+
+            // Only advance time if the amplitude hasn't exploded past a safe render limit
+            // (e^x grows VERY fast, this prevents the computer from freezing)
+            if (currentAmplitude < 10000) {
+                time += 0.05;
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        // Initialize UI and start loop
+        updateUI();
+        draw();
+    </script>
+</body>
+</html>
