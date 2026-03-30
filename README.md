@@ -1,6 +1,6 @@
 # Energy Methods and Uniqueness of IBVPs
  
-**Mini Research Project — MAL5030 (Partial Differential Equations)**
+**Mini Research Project — MAL6050 (Partial Differential Equations)**
 **M.Sc. Mathematics | IIT Jodhpur**
 **Author: Souvik Ghorui (M25MA2008)**
  
@@ -172,5 +172,5 @@ The compiled PDF is already included as `Energy_method_mini_research.pdf`.
  
 ## License
  
-This project is submitted as coursework for **MAL5030** at IIT Jodhpur. All original code, proofs, and simulations are authored by Souvik Ghorui. Reference PDFs are included for academic/educational use only.
+This project is submitted as coursework for **MAL6050** at IIT Jodhpur. All original code, proofs, and simulations are authored by Souvik Ghorui. Reference PDFs are included for academic/educational use only.
  
