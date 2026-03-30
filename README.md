@@ -71,13 +71,13 @@ We show $E'(t) = 0$ (energy conservation), hence $E(t) \equiv E(0) = 0$.
  
 Extension of the heat equation with a reaction term:
  
-$$u_t = D\, u_{xx} + f(u)$$
+$$u_t = D \cdot u_{xx} + f(u)$$
  
 Uniqueness analysis under suitable Lipschitz conditions on $f$, using Gronwall's inequality alongside the energy method.
  
 ### 5. Damped Wave Equation
  
-$$u_{tt} + 2\alpha\, u_t = c^2 u_{xx}$$
+$$u_{tt} + 2\alpha \cdot u_t = c^2 u_{xx}$$
  
 The modified energy functional accounts for damping, and we show strict energy decay: $E'(t) \leq 0$.
  
