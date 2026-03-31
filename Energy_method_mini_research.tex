@@ -758,18 +758,31 @@ the analysis of PDEs.
     \item \textbf{AI Tool:} Claude (Anthropic) \\
     \textbf{Prompt:} Write me a Latex code to generate the sample report and write the hand written notes and mathematical contents in the generated file. \\
     \textbf{Usage:} Used to assist in structuring the report and formatting the \LaTeX{} source. All mathematical content, derivations, and proofs were drawn from the provided study notes and standard PDE references, and were verified independently.
+
+    \medskip % Adds a little vertical space between items
+
+    \item \textbf{AI Tool:} Gemini (Google) \\
+    \textbf{Prompt:} What is damped wave equation. Explain. \\
+    \textbf{Usage:} Used to obtain a conceptual explanation of the damped wave equation, including a breakdown of its mathematical terms (acceleration, restoring force, and damping) and their physical interpretations.
+
     
     \medskip % Adds a little vertical space between items
 
     \item \textbf{AI Tool:} Gemini (Google) \\
-    \textbf{Prompt:} write me a code using html, css and javascript to make a interactive environment to show how a reaction diffusion model (pde) works in real life. make it mathematically correct. the equation is $u_t = k u_{xx} + r u$. \\
-    \textbf{Usage:} Used to generate a functional HTML/JS environment that numerically solves a linear reaction-diffusion PDE using finite difference spatial discretization and Euler time integration.
-    
+    \textbf{Prompt:} Give me an example for applying energy method on the damped wave equation. \\
+    \textbf{Usage:} Used to generate a step-by-step mathematical derivation applying the energy method. This included defining the energy functional, applying Green's First Identity, and outlining the proofs for energy dissipation and solution uniqueness.
+
+
     \medskip % Adds a little vertical space between items
 
     \item \textbf{AI Tool:} Gemini (Google) \\
-    \textbf{Prompt:} write me a code using html, css and javascript to make a interactive environment to show how a damped wave model (pde) works in real life. make it mathematically correct. the equation is $u_{tt} + 2 \gamma u_t = c^2 u_{xx}$. \\
-    \textbf{Usage:} Used to write an HTML, CSS, and JavaScript script that builds an interactive, mathematically accurate simulation of a damped wave PDE model.
+    \textbf{Prompt:} Explain me what is reaction diffusion model in pde and how it works. \\
+    \textbf{Usage:} Used to generate a conceptual overview of reaction-diffusion models in partial differential equations. This included breaking down the mathematical terms (diffusion and reaction kinetics), explaining the underlying physical mechanisms, and providing common examples such as the Fisher-KPP equation and Turing patterns.
+
+    \item \textbf{AI Tool:} Gemini (Google) \\
+    \textbf{Prompt:} How we use energy method in diffusion model. \\
+    \textbf{Usage:} Used to generate a mathematical demonstration of the energy method applied to a pure diffusion model (heat equation). This included defining the $L^2$ norm as the energy functional, applying Green's First Identity to prove energy dissipation, and extending the derivation to a linear reaction-diffusion system using Gronwall's inequality to show the balance of forces.
+    
 \end{itemize}
 
 %% ══════════════════════════════════════════════════════════════════════════
