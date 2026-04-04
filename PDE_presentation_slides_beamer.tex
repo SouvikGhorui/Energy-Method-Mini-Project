@@ -1,0 +1,208 @@
+\documentclass{beamer}
+
+% Clean, minimal theme with a professional blue accent
+\usetheme{default}
+\usecolortheme{whale} 
+\setbeamertemplate{navigation symbols}{} 
+
+% Custom footline with a colored top border
+\setbeamercolor{custom footline}{fg=darkgray, bg=white}
+\setbeamercolor{footline border}{bg=structure.fg} 
+
+
+% Custom footline to show Name, Course, Roll Number, and Page Number on every slide
+\setbeamertemplate{footline}{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.8pt,dp=0pt]{footline border}%
+  \end{beamercolorbox}%
+  }
+  \hbox{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.5ex,leftskip=2ex,rightskip=2ex]{custom footline}%
+    \usebeamerfont{footline}\scriptsize
+    \textbf{Souvik Ghorui} \ \textbar\ \ M.Sc. M.Tech \ \textbar\ \ Roll: M25MA2008
+    \hfill
+    Slide \insertframenumber{}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+
+\title{Energy Methods and Their Application}
+\subtitle{Uniqueness of Initial Boundary Value Problems}
+\author{Souvik Ghorui \\ \small Roll No. M25MA2008}
+\institute{Department of Mathematics \\ Course: MAL5030 (M.Sc. M.Tech)}
+\date{March 29, 2026}
+
+\begin{document}
+
+% --- Slide 1: Title ---
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% --- Slide 2: Motivation ---
+\begin{frame}{Motivation}
+    \begin{itemize}[<+->]
+        \item Physical phenomena (heat, waves) are modelled by PDEs.
+        \item We need to establish \textbf{well-posedness}.
+        \item Classical techniques rely on explicit solutions.
+        \item \textbf{Goal:} A unified, flexible approach based directly on the PDE structure.
+    \end{itemize}
+\end{frame}
+
+% --- Slide 3: Well-Posedness ---
+\begin{frame}{Hadamard's Well-Posedness}
+    A PDE problem is well-posed if a solution:
+    \vspace{0.5cm}
+    \begin{itemize}[<+->]
+        \item \textbf{Exists}
+        \item \textbf{Is Unique} 
+        \item \textbf{Depends continuously on data} (Stability)
+    \end{itemize}
+    \vspace{0.5cm}
+    \pause
+    \textit{The Energy Method provides elegant proofs for Uniqueness and Stability.}
+\end{frame}
+
+% --- Slide 4: Mathematical Tools ---
+\begin{frame}{Mathematical Background}
+    \begin{itemize}[<+->]
+        \item \textbf{$L^2$ Norm:} Measures global size.
+        \[ \|f\|^2 = \int_0^L [f(x)]^2 dx \]
+        
+        \item \textbf{Integration by Parts (IBP):} Key for spatial derivatives.
+        \[ \int_0^L u_{xx} u \, dx = [u_x u]_0^L - \int_0^L u_x^2 dx \]
+        
+        \item \textbf{Gronwall's Inequality:} Bounds energy growth over time.
+        \[ E'(t) \le C E(t) \implies E(t) \le E(0)e^{Ct} \]
+    \end{itemize}
+\end{frame}
+
+% --- Slide 5: The Strategy ---
+\begin{frame}{The Energy Method: Two-Step Strategy}
+    \begin{itemize}[<+->]
+        \item \textbf{Step 1: Energy Identity}
+        \begin{itemize}
+            \item Multiply the PDE by $u$ (or $u_t$).
+            \item Integrate over the domain.
+            \item Apply IBP and boundary conditions.
+        \end{itemize}
+        \vspace{0.3cm}
+        \item \textbf{Step 2: Apply Gronwall}
+        \begin{itemize}
+            \item Formulate an inequality: $E'(t) \le C E(t) + G(t)$.
+            \item Deduce the explicit bound for $E(t)$.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Slide 6: Uniqueness Logic ---
+\begin{frame}{How Uniqueness Follows}
+    \begin{itemize}[<+->]
+        \item Assume two solutions: $u_1$ and $u_2$.
+        \item Define the difference: $w = u_1 - u_2$.
+        \item $w$ satisfies a \textbf{homogeneous} IBVP with $w(x,0) = 0$.
+        \item Define energy $E_w(t) \ge 0$.
+        \item Show $E'_w(t) \le 0$.
+        \item Since $E_w(0) = 0$, it follows that $E_w(t) = 0$ for all $t \ge 0$.
+        \item Conclusion: $w \equiv 0 \implies u_1 = u_2$.
+    \end{itemize}
+\end{frame}
+
+% --- Slide 7: Application 1 ---
+\begin{frame}{Application 1: Heat Equation}
+    \begin{itemize}[<+->]
+        \item \textbf{PDE:} $u_t = k u_{xx} + f(x,t)$
+        \item \textbf{Energy Functional:} 
+        \[ E(t) = \frac{1}{2} \|u(\cdot,t)\|^2 \]
+        \item \textbf{Energy Identity:} 
+        \[ E'(t) = -k\|u_x\|^2 + \langle u,f \rangle \]
+        \item \textbf{Homogeneous Case ($f=0$):} $E'(t) \le 0$. Energy dissipates.
+        \item \textbf{Decay:} 
+        \[ E(t) \le E(0)e^{-2k\pi^2 t/L^2} \]
+    \end{itemize}
+\end{frame}
+
+% --- Slide 8: Application 2 ---
+\begin{frame}{Application 2: Wave Equation}
+    \begin{itemize}[<+->]
+        \item \textbf{PDE:} $u_{tt} = c^2 u_{xx} + f(x,t)$
+        \item \textbf{Energy Functional:} (Kinetic + Potential)
+        \[ E(t) = \frac{1}{2} \int_0^L (u_t^2 + c^2 u_x^2) dx \]
+        \item \textbf{Energy Identity:} 
+        \[ E'(t) = \langle u_t, f \rangle \]
+        \item \textbf{Homogeneous Case ($f=0$):} $E'(t) = 0$.
+        \item \textbf{Result:} Energy is strictly conserved ($E(t) = E(0)$).
+    \end{itemize}
+\end{frame}
+
+% --- Slide 9: Example 1 ---
+\begin{frame}{Example 1: Reaction-Diffusion Equation}
+    \begin{itemize}[<+->]
+        \item \textbf{PDE:} $u_t = u_{xx} + u$ \quad for $x \in (0, \pi)$
+        \item \textbf{Data:} $u(x,0) = \sin x$, with zero Dirichlet boundary conditions.
+        \item \textbf{Energy Identity:} 
+        \[ E'(t) = -\|u_x\|^2 + \|u\|^2 \]
+        \item \textbf{Behavior:} Using the Poincar\'e inequality, $E'(t) \le 0$. Energy is non-increasing.
+        \item \textbf{Exact Solution:} $u(x,t) = \sin x$ \\ \small (The energy remains constant at $\pi/4$).
+    \end{itemize}
+\end{frame}
+
+% --- Slide 10: Example 2 ---
+\begin{frame}{Example 2: Damped Wave Equation}
+    \begin{itemize}[<+->]
+        \item \textbf{PDE:} $u_{tt} + 2\gamma u_t = c^2 u_{xx}$ \quad ($\gamma > 0$ is the damping coefficient)
+        \item \textbf{Energy Functional:} 
+        \[ E(t) = \frac{1}{2} \int_0^L (u_t^2 + c^2 u_x^2) dx \]
+        \item \textbf{Energy Identity:} 
+        \[ E'(t) = -2\gamma \|u_t\|^2 \le 0 \]
+        \item \textbf{Behavior:} The damping term strictly dissipates energy.
+        \item \textbf{Result:} The string gradually comes to rest, naturally forcing uniqueness.
+    \end{itemize}
+\end{frame}
+
+
+% --- Slide 11: Energy Comparison Graph ---
+\begin{frame}{Energy Behavior Over Time}
+    \begin{center}
+        % Make sure the image file is in the same directory as your .tex file
+        \includegraphics[height=0.55\textheight, keepaspectratio]{energy_comparison.png}
+    \end{center}
+    
+    \vspace{0.2cm}
+    \begin{itemize}[<+->]
+        \item \textbf{Heat Equation:} Energy dissipates exponentially.
+        \item \textbf{Wave Equation:} Energy is perfectly conserved.
+        \item \textbf{Damped Wave Equation:} Damping continuously pulls energy out (non-increasing).
+    \end{itemize}
+\end{frame}
+
+
+% --- Slide 11: Discussion ---
+\begin{frame}{Discussion}
+    \textbf{Strengths:}
+    \begin{itemize}[<+->]
+        \item No explicit solution required.
+        \item Highly flexible (works for linear and many nonlinear PDEs).
+        \item Provides direct physical insight.
+    \end{itemize}
+    \vspace{0.3cm}
+    \pause
+    \textbf{Limitations:}
+    \begin{itemize}[<+->]
+        \item Primarily yields $L^2$ information, not pointwise maximums.
+        \item Deriving identities for complex nonlinear problems is difficult.
+        \item Does not prove existence of a solution.
+    \end{itemize}
+\end{frame}
+
+
+
+% --- Slide 12: Conclusion ---
+\begin{frame}{Conclusion}
+    \begin{center}
+        \LARGE Thank You!
+    \end{center}
+\end{frame}
+
+\end{document}
